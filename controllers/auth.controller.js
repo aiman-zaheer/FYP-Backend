@@ -19,7 +19,9 @@ const signUpController = async (req, res) => {
       const encryptPassword = await encryptedPassword(password);
       const data = { ...restbody, password: encryptPassword };
       const user = await UserModel.create(data);
-      sendResponse(res, user, true, 200, "ok");
+      const dataObject = user.toObject();
+      const { email, pass, ...restData } = dataObject;
+      sendResponse(res, restData, true, 200, "ok");
     }
   } catch (error) {
     sendResponse(res, null, false, 500, "Internal Error!");
@@ -29,7 +31,7 @@ const signUpController = async (req, res) => {
 const logInController = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
-    const ss = await UserModel.findOne({ email });
+    const ss = await UserModel.findOne({ email, role });
     if (ss) {
       const isPasswordCorrect = await decryptedPassword(password, ss);
       if (isPasswordCorrect) {
@@ -37,7 +39,9 @@ const logInController = async (req, res) => {
         const refreshToken = getRefreshToken(ss);
         res.setHeader("Authorization", `Bearer ${accessToken}`);
         res.setHeader("Refresh_Token", `Bearer ${refreshToken}`);
-        sendResponse(res, ss, true, 200, "ok");
+        const dataObject = ss.toObject();
+        const { email, password, ...restData } = dataObject;
+        sendResponse(res, restData, true, 200, "ok");
       } else {
         sendResponse(res, null, false, 404, "Invalid email or password");
       }
@@ -57,11 +61,11 @@ const refreshTokenController = (req, res) => {
       process.env.REFRESH_TOKEN_SECRET,
       (err, decoded) => {
         if (err) {
-          sendResponse(res,null,false,401,"Unauthorized");
+          sendResponse(res, null, false, 401, "Unauthorized");
         } else {
           const accessToken = getAccessToken(decoded);
           res.setHeader("Authorization", `Bearer ${accessToken}`);
-          sendResponse(res,null,true,200,"refresh token generated");
+          sendResponse(res, null, true, 200, "refresh token generated");
         }
       }
     );
