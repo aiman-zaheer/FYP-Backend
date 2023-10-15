@@ -65,7 +65,7 @@ const resetPassword = async (req, res) => {
         );
         const resetPassword = await UserModel.findOne({
           $and: [{ role: "customer" }, { _id: id }],
-        }).select('-password');
+        }).select("-password");
         sendResponse(res, resetPassword, true, 200, "ok");
       } else {
         sendResponse(res, null, false, 401, "Wrong Password");
@@ -78,8 +78,25 @@ const resetPassword = async (req, res) => {
     sendResponse(res, null, false, 500, "Internal Server Error");
   }
 };
+const deleteCustomer = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const customer = await UserModel.deleteOne({
+      $and: [{ role: "customer" }, { _id: id }],
+    });
+    if (customer.deletedCount !== 0) {
+      sendResponse(res, null, true, 200, "ok");
+    } else {
+      sendResponse(res, null, false, 404, "Customer not Found");
+    }
+  } catch (error) {
+    console.log("error", error);
+    sendResponse(res, null, false, 500, "Internal Server Error");
+  }
+};
 module.exports = {
   getAllTailors,
   editCustomer,
   resetPassword,
+  deleteCustomer,
 };
