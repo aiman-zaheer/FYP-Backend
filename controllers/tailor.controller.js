@@ -63,7 +63,24 @@ const resetPassword = async (req, res) => {
     sendResponse(res, null, false, 500, "Internal Server Error");
   }
 };
+const deleteTailor = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const tailor = await UserModel.deleteOne({
+      $and: [{ role: "tailor" }, { _id: id }],
+    });
+    if (tailor.deletedCount !== 0) {
+      sendResponse(res, null, true, 200, "ok");
+    } else {
+      sendResponse(res, null, false, 404, "Tailor not Found");
+    }
+  } catch (error) {
+    console.log("error", error);
+    sendResponse(res, null, false, 500, "Internal Server Error");
+  }
+};
 module.exports = {
   editTailor,
   resetPassword,
+  deleteTailor,
 };
