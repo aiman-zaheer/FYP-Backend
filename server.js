@@ -6,7 +6,7 @@ dotenv.config();
 
 //accessig environment variable
 const API_PORT = process.env.API_PORT;
-const port = API_PORT || 3000;
+const port = API_PORT || 5000;
 
 //connecting database
 connection();
