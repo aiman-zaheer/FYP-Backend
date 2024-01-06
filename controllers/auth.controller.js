@@ -7,6 +7,9 @@ const {
 } = require("../helper/authHelper");
 const jwt = require("jsonwebtoken");
 const sendResponse = require("../helper/sharedHelper");
+const fs = require('fs');
+// const path = require('path');
+// const logStream = fs.createWriteStream(path.join(__dirname, 'console.log'), { flags: 'a' });
 
 const signUpController = async (req, res) => {
   try {
@@ -24,7 +27,9 @@ const signUpController = async (req, res) => {
       sendResponse(res, restData, true, 200, "ok");
     }
   } catch (error) {
-    sendResponse(res, null, false, 500, "Internal Error!");
+    // logStream.write(`${new Date().toISOString()} - ${error}\n`);
+
+    sendResponse(res, null, false, 500, error);
     console.log(`${error}`);
   }
 };
