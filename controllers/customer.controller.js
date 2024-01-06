@@ -94,9 +94,50 @@ const deleteCustomer = async (req, res) => {
     sendResponse(res, null, false, 500, "Internal Server Error");
   }
 };
+const addToFavTailor = async (req, res) => {
+  try {
+    const { customerid, tailorid } = req.body;
+    const customer = await UserModel.findOne({ _id: customerid });
+    if (customer) {
+      if (customer.favourites.includes(tailorid)) {
+        await UserModel.findByIdAndUpdate(customerid, {
+          $pull: { favourites: tailorid },
+        });
+        sendResponse(res, null, true, 200, "ok");
+      } else {
+        await UserModel.findByIdAndUpdate(customerid, {
+          $addToSet: { favourites: tailorid },
+        });
+        sendResponse(res, null, true, 200, "ok");
+      }
+    } else {
+      sendResponse(res, null, false, 404, "Customer not Found");
+    }
+  } catch (error) {
+    console.log("error", error);
+    sendResponse(res, null, false, 500, "Internal Server Error");
+  }
+};
+
+const allFavTailor = async (req, res) => {
+  try {
+    const { customerid } = req.body;
+    const customer = await UserModel.findOne({ _id: customerid });
+    if (customer) {
+      sendResponse(res, customer.favourites, true, 200, "ok");
+    } else {
+      sendResponse(res, null, false, 404, "Customer not Found");
+    }
+  } catch (error) {
+    console.log("error", error);
+    sendResponse(res, null, false, 500, "Internal Server Error");
+  }
+};
 module.exports = {
   getAllTailors,
   editCustomer,
   resetPassword,
   deleteCustomer,
+  addToFavTailor,
+  allFavTailor,
 };

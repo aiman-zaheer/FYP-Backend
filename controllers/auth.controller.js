@@ -20,7 +20,7 @@ const signUpController = async (req, res) => {
       const data = { ...restbody, password: encryptPassword };
       const user = await UserModel.create(data);
       const dataObject = user.toObject();
-      const { email, pass, ...restData } = dataObject;
+      const { email, password: pass, ...restData } = dataObject;
       sendResponse(res, restData, true, 200, "ok");
     }
   } catch (error) {
