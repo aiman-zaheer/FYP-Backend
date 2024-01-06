@@ -5,7 +5,7 @@ const cors = require("cors");
 //CORS Options
 const corsOptions = {
   origin: "http://localhost:3001", // Replace with the origin of your client application
-  methods: ["GET", "POST"], // Specify the allowed HTTP methods
+  methods: ["GET", "POST", "UPDATE", "DELETE"], // Specify the allowed HTTP methods
   allowedHeaders: ["Content-Type", "Authorization"], // Specify the allowed headers
 };
 
