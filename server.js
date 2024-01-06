@@ -6,11 +6,16 @@ dotenv.config();
 
 //accessig environment variable
 const API_PORT = process.env.API_PORT;
-const PORT = API_PORT || 4000;
+const port = API_PORT || 4000;
 
 //connecting database
 connection();
 
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+const server = app.listen(port, () =>
+  console.log(`Server started listening on ${port}`)
+);
+
+process.on("unhandledRejection", (error, promise) => {
+  console.log(`Logged Error: ${error}`);
+  server.close(() => process.exit(1));
 });
