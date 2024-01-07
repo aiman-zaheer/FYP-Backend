@@ -1,14 +1,49 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
+  firstname: {
+    type: String,
+    required: true,
+    collation: { locale: "en", strength: 2 },
+  },
+  lastname: {
+    type: String,
+    required: true,
+    collation: { locale: "en", strength: 2 },
+  },
   email: {
     type: String,
     required: true,
     collation: { locale: "en", strength: 2 },
   },
-  name: {
+  gender: {
     type: String,
     required: true,
+    collation: { locale: "en", strength: 2 },
+  },
+  contactno: {
+    type: String,
+    required: true,
+    collation: { locale: "en", strength: 2 },
+  },
+  address: {
+    type: String,
+    required: false,
+    collation: { locale: "en", strength: 2 },
+  },
+  businessdescription: {
+    type: String,
+    required: false,
+    collation: { locale: "en", strength: 2 },
+  },
+  garmenttype: {
+    type: String,
+    required: false,
+    collation: { locale: "en", strength: 2 },
+  },
+  garmentstyle: {
+    type: String,
+    required: false,
     collation: { locale: "en", strength: 2 },
   },
   password: {
