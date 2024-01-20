@@ -3,6 +3,7 @@ const {
   encryptedPassword,
 } = require("../helper/authHelper");
 const sendResponse = require("../helper/sharedHelper");
+const ImageModel = require("../models/imageModel");
 const UserModel = require("../models/userModel");
 
 const editTailor = async (req, res) => {
@@ -50,7 +51,6 @@ const resetPassword = async (req, res) => {
         const resetPassword = await UserModel.findOne({
           $and: [{ role: "tailor" }, { _id: id }],
         }).select("-password");
-        console.log(resetPassword);
         sendResponse(res, resetPassword, true, 200, "ok");
       } else {
         sendResponse(res, null, false, 401, "Wrong Password");
@@ -79,8 +79,60 @@ const deleteTailor = async (req, res) => {
     sendResponse(res, null, false, 500, "Internal Server Error");
   }
 };
+const uploadImage = async (req, res) => {
+  const tailorid = req.params.id;
+  const imageBuffer = req.file.buffer;
+  const contentType = req.file.mimetype;
+  const price = req.body.price;
+  const garmentType = req.body.garmentType;
+
+  try {
+    const tailor = await UserModel.findOne({ _id: tailorid });
+    if (tailor) {
+      let userImages = await ImageModel.findOne({ tailorid });
+
+      if (!userImages) {
+        userImages = await ImageModel.create({ tailorid, images: [] });
+      }
+
+      userImages.images.push({
+        data: imageBuffer,
+        contentType,
+        price,
+        garmentType,
+      });
+      await userImages.save();
+      sendResponse(res, null, true, 200, "Image uploaded successfully");
+    } else {
+      sendResponse(res, null, false, 404, "tailor not found");
+    }
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    sendResponse(res, null, false, 400, "Error uploading image");
+  }
+};
+const getImage = async (req, res) => {
+  const tailorid = req.params.id;
+  try {
+    const tailor = await UserModel.findOne({ _id: tailorid });
+    if (tailor) {
+      const userImages = await ImageModel.findOne({ tailorid });
+      if (!userImages) {
+        return sendResponse(res, null, false, 404, "user not found");
+      }
+      sendResponse(res, userImages.images, true, 200, "ok");
+    } else {
+      sendResponse(res, null, false, 404, "tailor not found");
+    }
+  } catch (error) {
+    console.error("Error getting images:", error);
+    sendResponse(res, null, false, 500, "Error getting images");
+  }
+};
 module.exports = {
   editTailor,
   resetPassword,
   deleteTailor,
+  uploadImage,
+  getImage,
 };
