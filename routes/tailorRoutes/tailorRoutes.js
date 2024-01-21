@@ -6,6 +6,8 @@ const {
   resetPassword,
   uploadImage,
   getImage,
+  updateOrderStatus,
+  orderDetails,
 } = require("../../controllers/tailor.controller.js");
 const { getTailorRating, getAllTailors } = require("../../controllers/customer.controller.js");
 
@@ -24,5 +26,7 @@ router.post("/upload/:id", authMiddleWare, upload.single("image"), uploadImage);
 router.get("/getImages/:id", authMiddleWare, getImage);
 router.get("/getAllRating/", authMiddleWare, getTailorRating);
 router.get("/getAllTailors", authMiddleWare, getAllTailors);
+router.put('/updateOrderStatus/:orderId',authMiddleWare, updateOrderStatus);
+router.get("/orderDetails/:tailorId", authMiddleWare, orderDetails);
 
 module.exports = router;

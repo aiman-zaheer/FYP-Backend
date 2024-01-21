@@ -4,6 +4,7 @@ const {
 } = require("../helper/authHelper");
 const sendResponse = require("../helper/sharedHelper");
 const ImageModel = require("../models/imageModel");
+const OrderModel = require("../models/orderModel");
 const UserModel = require("../models/userModel");
 
 const editTailor = async (req, res) => {
@@ -129,10 +130,66 @@ const getImage = async (req, res) => {
     sendResponse(res, null, false, 500, "Error getting images");
   }
 };
+const updateOrderStatus = async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const newStatus = req.body.status;
+    const tailorId = req.body.tailorId; // Assuming you include the tailor ID in the request body
+
+    // Check if the order exists
+    const order = await OrderModel.findById(orderId);
+    if (!order) {
+      sendResponse(res, null, false, 404, "Order not found");
+      return;
+    }
+
+    // Verify that the provided tailor ID matches the order's tailorId
+    if (order.tailorId.toString() !== tailorId) {
+      sendResponse(res, null, false, 404, "tailor not found");
+      return;
+    }
+
+    // Update the order status
+    order.status = newStatus;
+    await order.save();
+
+    // Send a success response
+    sendResponse(res, null, true, 200, "Order status updated successfully");
+  } catch (error) {
+    // Handle errors and send an appropriate response
+    console.error(error);
+    sendResponse(res, null, false, 500, "Internal Server Error");
+  }
+};
+const orderDetails = async (req, res) => {
+  try {
+    const tailorId = req.params.tailorId;
+    const tailor = await UserModel.findOne({ _id: tailorId });
+    if (tailor) {
+      // Fetch orders associated with the specified tailor
+      const orders = await OrderModel.find({ tailorId });
+
+      if (orders && orders.length > 0) {
+        // Send the list of orders in the response
+        sendResponse(res, orders, true, 200, "Orders fetched successfully");
+      } else {
+        sendResponse(res, null, false, 404, "Orders not found");
+      }
+    } else {
+      sendResponse(res, null, false, 404, "tailor not found");
+    }
+  } catch (error) {
+    // Handle errors and send an appropriate response
+    console.error(error);
+    sendResponse(res, null, false, 500, "Internal Server Error");
+  }
+};
 module.exports = {
   editTailor,
   resetPassword,
   deleteTailor,
   uploadImage,
   getImage,
+  updateOrderStatus,
+  orderDetails,
 };

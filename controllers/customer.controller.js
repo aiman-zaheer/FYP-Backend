@@ -5,6 +5,7 @@ const {
   decryptedPassword,
 } = require("../helper/authHelper");
 const RatingModel = require("../models/ratingModel");
+const OrderModel = require("../models/orderModel");
 
 const getAllTailors = async (req, res) => {
   try {
@@ -135,7 +136,6 @@ const allFavTailor = async (req, res) => {
   }
 };
 const rateTailor = async (req, res) => {
-  console.log("hello");
   try {
     const { customerId, rating, comment } = req.body;
     const tailorId = req.params.tailorId;
@@ -262,6 +262,59 @@ const getTailorRating = async (req, res) => {
     sendResponse(res, null, false, 500, "Internal Server Error");
   }
 };
+const placeOrder = async (req, res) => {
+  try {
+    const {
+      customerId,
+      tailorId,
+      orderSummary,
+      orderDate,
+      status,
+      deliveryDate,
+      contact,
+      paymentMethod,
+      total,
+      deliveryAddress,
+    } = req.body;
+
+    const customer = await UserModel.findOne({
+      _id: customerId,
+      role: "customer",
+    });
+    const tailor = await UserModel.findOne({
+      _id: tailorId,
+      role: "tailor",
+    });
+    if (tailor && customer) {
+      // Create a new order
+      const newOrder = new OrderModel({
+        customerId,
+        tailorId,
+        orderSummary,
+        orderDate,
+        status,
+        deliveryDate,
+        contact,
+        paymentMethod,
+        total,
+        deliveryAddress,
+      });
+
+      // Save the order to the database
+      await newOrder.save();
+
+      // Send a success response
+      sendResponse(res, null, true, 200, "Order created successfully");
+    } else {
+      sendResponse(res, null, false, 404, "not found");
+    }
+  } catch (error) {
+    // Handle errors and send an appropriate response
+    console.error(error);
+    sendResponse(res, null, false, 500, "Internal Server Error");
+  }
+};
+
 module.exports = {
   getAllTailors,
   editCustomer,
@@ -271,4 +324,5 @@ module.exports = {
   allFavTailor,
   rateTailor,
   getTailorRating,
+  placeOrder,
 };
