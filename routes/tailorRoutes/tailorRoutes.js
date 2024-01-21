@@ -7,6 +7,7 @@ const {
   uploadImage,
   getImage,
 } = require("../../controllers/tailor.controller.js");
+const { getTailorRating, getAllTailors } = require("../../controllers/customer.controller.js");
 
 const multer = require("multer");
 
@@ -21,5 +22,7 @@ router.put("/resetPassword/:id", authMiddleWare, resetPassword);
 router.delete("/deleteTailor/:id", authMiddleWare, deleteTailor);
 router.post("/upload/:id", authMiddleWare, upload.single("image"), uploadImage);
 router.get("/getImages/:id", authMiddleWare, getImage);
+router.get("/getAllRating/", authMiddleWare, getTailorRating);
+router.get("/getAllTailors", authMiddleWare, getAllTailors);
 
 module.exports = router;
