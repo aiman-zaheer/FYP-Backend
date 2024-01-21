@@ -9,6 +9,7 @@ const {
   allFavTailor,
   rateTailor,
   getTailorRating,
+  placeOrder,
 } = require("../../controllers/customer.controller.js");
 const { getImage } = require("../../controllers/tailor.controller.js");
 
@@ -23,5 +24,6 @@ router.get("/getFavourite", authMiddleWare, allFavTailor);
 router.get("/getImages/:id", authMiddleWare, getImage);
 router.post("/rateTailor/:tailorId", authMiddleWare, rateTailor);
 router.get("/getAllRating/", authMiddleWare, getTailorRating);
+router.post("/placeOrder", authMiddleWare, placeOrder)
 
 module.exports = router;
